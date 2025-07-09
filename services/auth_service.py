@@ -15,12 +15,26 @@ def autenticar_usuario(correo, clave):
 
 
 def registrar_usuario(correo, clave):
+    # Validaciones básicas
+    if not correo.strip() or not clave.strip():
+        print("❌ El correo y la contraseña no pueden estar vacíos.")
+        return False
+
+    if "@" not in correo:
+        print("❌ El correo debe contener '@'.")
+        return False
+
+    if len(clave) < 6:
+        print("❌ La contraseña debe tener al menos 6 caracteres.")
+        return False
+
     conn = get_db()
     cursor = conn.cursor()
 
     # Verifica si el usuario ya existe
     cursor.execute("SELECT * FROM usuario WHERE correo = %s", (correo,))
     if cursor.fetchone():
+        print("❌ El correo ya está registrado.")
         return False
 
     # Registra usuario con rol 2 (Jugador)
@@ -28,4 +42,6 @@ def registrar_usuario(correo, clave):
     query = "INSERT INTO usuario (correo, clave, id_rol) VALUES (%s, %s, %s)"
     cursor.execute(query, (correo, clave, id_rol_jugador))
     conn.commit()
+    print("✅ Usuario registrado exitosamente.")
     return True
+
