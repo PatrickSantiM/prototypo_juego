@@ -1,24 +1,13 @@
-import requests
+from services.auth_service import registrar_usuario
 
-def registrar_usuario():
+def registrar_usuario_menu():
     print("\n=== Registro de Usuario (Jugador) ===")
     correo = input("Ingrese su correo: ")
     clave = input("Ingrese su contraseña: ")
 
-    datos = {
-        "correo": correo,
-        "clave": clave
-    }
+    registrado = registrar_usuario(correo, clave)
 
-    try:
-        response = requests.post("http://localhost:3306/register", json=datos)
-
-        if response.status_code == 200:
-            print("✅ Usuario registrado exitosamente.")
-        elif response.status_code == 409:
-            print("⚠️ Este correo ya está registrado.")
-        else:
-            print(f"❌ Error: {response.json().get('error')}")
-
-    except Exception as e:
-        print(f"❌ Error de conexión con el servidor: {e}")
+    if registrado:
+        print("✅ Usuario registrado exitosamente.")
+    else:
+        print("⚠️ Este correo ya está registrado o hubo un error.")

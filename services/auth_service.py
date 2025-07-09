@@ -5,7 +5,7 @@ def autenticar_usuario(correo, clave):
     cursor = conn.cursor(dictionary=True)
 
     query = """
-        SELECT u.correo, r.nombre_rol
+        SELECT u.id_user, u.correo, r.nombre_rol
         FROM usuario u
         JOIN rol r ON u.id_rol = r.id_rol
         WHERE u.correo = %s AND u.clave = %s

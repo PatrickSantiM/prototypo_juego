@@ -1,26 +1,27 @@
-import requests
+import sys
+import os
+from services.auth_service import autenticar_usuario
+from console.menu_personajes import menu_personajes
+from console.menu_gm import menu_gm
+
+def limpiar_pantalla():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def login_usuario():
+    limpiar_pantalla()
     print("\n=== Inicio de Sesión ===")
     correo = input("Correo: ")
     clave = input("Contraseña: ")
 
-    datos = {
-        "correo": correo,
-        "clave": clave
-    }
+    usuario = autenticar_usuario(correo, clave)
 
-    try:
-        response = requests.post("http://localhost:5000/login", json=datos)
-        
-        if response.status_code == 200:
-            user = response.json()
-            print(f"\n✅ Bienvenido {user['correo']} - Rol: {user['rol']}")
-            # Aquí puedes continuar con el menú de personaje si es jugador.
-            # Por ejemplo: mostrar_menu_personaje(user['correo'])
-
-        else:
-            print("❌ Error:", response.json().get("error"))
-
-    except Exception as e:
-        print("❌ No se pudo conectar al servidor:", e)
+    if usuario:
+        print(f"\n✅ Bienvenido {usuario['correo']} - Rol: {usuario['nombre_rol']}")
+        if usuario['nombre_rol'].lower() == "jugador":
+            print("🔓 Accediendo al menú de personajes...")
+            menu_personajes(usuario['id_user'])  # <-- Aquí le pasas el ID
+        elif usuario['nombre_rol'].lower() == "gm":
+            print("🎮 Accediendo al panel de Game Master...")
+            menu_gm(usuario['id_user'])
+    else:
+        print("❌ Correo o contraseña incorrectos.")
